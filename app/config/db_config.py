@@ -17,7 +17,7 @@ def get_db_connection():
     return mysql.connector.connect(
         host="bv4lux6cjid3g99chcmi-mysql.services.clever-cloud.com",
         user="upydfvu7asoqlnsi",
-        password="upydfvu7asoqlnsi",
+        password="bfSiTKmjQqWgOEjYzZ9i",
         database="bv4lux6cjid3g99chcmi"
     )
 
