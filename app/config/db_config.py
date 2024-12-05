@@ -10,6 +10,20 @@ def get_db_connection():
         database="bfrrsop1jsm0voqgbgao"
     )
 """
+
+
+
+def get_db_connection():
+    return mysql.connector.connect(
+        host="bv4lux6cjid3g99chcmi-mysql.services.clever-cloud.com",
+        user="upydfvu7asoqlnsi",
+        password="upydfvu7asoqlnsi",
+        database="bv4lux6cjid3g99chcmi"
+    )
+
+
+"""
+
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
@@ -18,3 +32,5 @@ def get_db_connection():
         database="proyecto"
     )
     ##importara a xampp
+
+"""
