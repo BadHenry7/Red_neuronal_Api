@@ -9,6 +9,9 @@ from app.routes.historial_routes import router as historial_router
 from app.routes.sintomas_routes import router as sintomas_router
 from red.botsi_routes import router as botci_router
 from app.routes.token_routes import router as token_router
+from app.routes.modulo_routes import router as modulo_router
+from app.routes.moduloxperfil_routes import router as moduloxperfil_router
+
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -28,7 +31,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",  # URL local de Svelte en desarrollo
-        "https://red-neurolal-svelte.onrender.com", 
+        "https://0315-161-10-153-168.ngrok-free.app","https://b45d-161-10-153-168.ngrok-free.app",   # URL de ngrok
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
@@ -45,6 +48,9 @@ app.include_router(historial_router)
 app.include_router(sintomas_router) 
 app.include_router(botci_router)
 app.include_router(token_router)
+app.include_router(modulo_router)
+app.include_router(moduloxperfil_router)
+
 
 
 """

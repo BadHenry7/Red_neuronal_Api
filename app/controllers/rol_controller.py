@@ -13,7 +13,8 @@ class RolController:
             cursor.execute("INSERT INTO rol (nombre,descripcion,estado) VALUES (%s, %s,%s)", (rol.nombre, rol.descripcion, rol.estado,))
             conn.commit()
             conn.close()
-            return {"resultado": "Rol creado"}
+            id=cursor.lastrowid
+            return {id}#aja
         except mysql.connector.Error as err:
             conn.rollback()
         finally:

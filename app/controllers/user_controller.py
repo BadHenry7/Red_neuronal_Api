@@ -7,8 +7,6 @@ from typing import List
 import pandas as pd
 
 class UserController:
-        
-    
     
     def create_user(self, user: User):   
         try:
@@ -35,7 +33,7 @@ class UserController:
         finally:
             conn.close()
     
-    def create_user_masivo(self, file: UploadFile):
+    def create_user_masivo (self, file: UploadFile):
         conn = None
         try:
             # Leer el archivo Excel
@@ -77,7 +75,10 @@ class UserController:
             
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM usuario WHERE id = %s ", (user.id,))
+            cursor.execute("""SELECT usuario.*, rol.*
+                FROM usuario
+                JOIN rol ON usuario.id_rol = rol.id
+                        WHERE usuario.id=%s """, (user.id,))
             result = cursor.fetchone()
             payload = []
             content = {} 
@@ -92,6 +93,7 @@ class UserController:
                     'telefono':result[6],
                     'id_rol':int(result[7]),
                     'estado':bool(result[8]),
+                    'roles_name':result[12],
             }
             payload.append(content)
             
@@ -146,7 +148,14 @@ class UserController:
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM usuario WHERE id_rol=2")
+            cursor.execute("""SELECT usuario.*, rol.*
+                FROM usuario
+                JOIN rol ON usuario.id_rol = rol.id
+                        WHERE usuario.id_rol!=1;
+
+                           
+                           
+                           """)
             result = cursor.fetchall()
             payload = []
             content = {} 
@@ -160,7 +169,11 @@ class UserController:
                     'documento':data[5],
                     'telefono':data[6],
                     'id_rol':data[7],
-                    'estado':data[8]
+                    'estado':data[8],
+
+                    'nombre_rol':data[12],
+                   
+
                 }
                 payload.append(content)
                 content = {}
@@ -287,9 +300,10 @@ class UserController:
             apellido = %s,
             documento=%s,
             telefono=%s ,
+            id_rol=%s,
             estado =%s 
             WHERE id = %s
-            """,(user.usuario,user.nombre,user.apellido,user.documento,user.telefono,user.estado,user.id,))
+            """,(user.usuario,user.nombre,user.apellido,user.documento,user.telefono,user.id_rol,user.estado,user.id,))
             conn.commit()
            
             return {"resultado": "Usuario actualizado correctamente"} 

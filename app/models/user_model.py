@@ -32,6 +32,7 @@ class Actualizar(BaseModel):
     apellido: str
     documento: str
     telefono:str
+    id_rol:int
     estado: bool
 
 

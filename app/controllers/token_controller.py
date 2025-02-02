@@ -25,7 +25,7 @@ class TokenController:
         cursor.execute("SELECT * FROM usuario where estado!=0 AND usuario = %s AND password = %s",(user.usuario, user.password,))
         result = cursor.fetchall()
         if result:
-            access_token_expires = timedelta(minutes=20)
+            access_token_expires = timedelta(minutes=50)
             access_token = self.create_access_token(data={"sub": user.usuario}, expires_delta=access_token_expires)
             return {"access_token": access_token}
         else:

@@ -23,7 +23,7 @@ class AtributoxusuarioController:
     def get_atributoxusuario(self, atributoxusuario: BuscarAtributoxusuario):
         try:
             conn = get_db_connection()
-            cursor = conn.cursor() #mano ya vengo dale
+            cursor = conn.cursor() 
             cursor.execute("SELECT * FROM atrixusuario WHERE id_usuario = %s", (atributoxusuario.id_usuario,))
             result = cursor.fetchone()
             payload = []
