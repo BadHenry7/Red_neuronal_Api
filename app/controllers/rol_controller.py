@@ -79,6 +79,35 @@ class RolController:
             conn.close()
 
 
+    def roles_get(self):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM rol where id!=1")
+            result = cursor.fetchall()
+            payload = []
+            content = {} 
+            for data in result:
+                content={
+                    'id':data[0],
+                    'nombre':data[1],
+                    'descripcion':data[2],
+                    'estado':data[3]
+                }
+                payload.append(content)
+                content = {}
+            json_data = jsonable_encoder(payload)        
+            if result:
+               return {"resultado": json_data}
+            else:
+                raise HTTPException(status_code=404, detail="User not found")  
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()
+
+
     def update_rol(self, rol_id: int, rol: Rol):
         try:
             conn = get_db_connection()
