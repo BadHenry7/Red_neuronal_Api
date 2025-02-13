@@ -93,7 +93,7 @@ class UserController:
                     'telefono':result[6],
                     'id_rol':int(result[7]),
                     'estado':bool(result[8]),
-                    'roles_name':result[12],
+                    'roles_name':result[14],
             }
             payload.append(content)
             
@@ -171,7 +171,7 @@ class UserController:
                     'id_rol':data[7],
                     'estado':data[8],
 
-                    'nombre_rol':data[12],
+                    'nombre_rol':data[14],
                    
 
                 }

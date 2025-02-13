@@ -11,3 +11,10 @@ class ModuloxPerfil(BaseModel):
 class Buscar_id (BaseModel):
 
     id_modulo: int = None
+
+
+class Buscar_id_rol (BaseModel):
+
+    id_rol: int
+   
+    

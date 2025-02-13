@@ -1,7 +1,7 @@
 import mysql.connector
 from fastapi import HTTPException
 from app.config.db_config import get_db_connection
-from app.models.moduloxperfil_model import ModuloxPerfil, Buscar_id
+from app.models.moduloxperfil_model import *
 from fastapi.encoders import jsonable_encoder
 
 class ModuloxPerfilController:
@@ -70,6 +70,41 @@ class ModuloxPerfilController:
             conn.rollback()
         finally:
             conn.close()
+
+
+    def get_mxp_id(self, moduloxperfil: Buscar_id_rol):#buscar id_rol
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor() 
+            cursor.execute("""SELECT mxp.id_modulo, mxp.estado 
+                           FROM moduloxperfil as mxp
+                           inner join usuario as u ON mxp.id_rol=u.id_rol
+                           WHERE u.id_rol = %s
+                           
+                           
+                           """, (moduloxperfil.id_rol,))
+            result = cursor.fetchall()
+            payload = []
+            content = {} 
+            for rv in result:
+                content={
+                        'id_modulo':int(rv[0]),
+                        'estado':str(rv[1])
+
+                }
+                payload.append(content)
+                
+            
+            json_data = jsonable_encoder(payload)            
+            if result:
+               return  {"resultado":json_data}
+            else:
+                raise HTTPException(status_code=404, detail="moduloxperfil not found")  
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()       
 
     def get_modulosxperfil(self):
         try:

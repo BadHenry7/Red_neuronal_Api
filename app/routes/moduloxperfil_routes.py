@@ -22,6 +22,11 @@ async def get_modulo(moduloxperfil: Buscar_id):
     rpta = nuevo_modulo.get_modulo(moduloxperfil)
     return rpta
 
+@router.post("/get_mxp_id")
+async def get_mxp_id(moduloxperfil: Buscar_id_rol):
+    rpta = nuevo_modulo.get_mxp_id(moduloxperfil)
+    return rpta
+
 @router.put("/update_moduloxperfil")
 async def Update_modulo(moduloxperfil: ModuloxPerfil):
     rpta = nuevo_modulo.update_modulo(moduloxperfil)
