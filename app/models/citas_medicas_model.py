@@ -32,6 +32,8 @@ class Upditon(BaseModel):
     fecha: str
     hora: str
     id_usuario:int
+    ubicacion:str= None
+    salas:str= None
 
        
 class Chaocita(BaseModel):

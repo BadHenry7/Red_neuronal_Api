@@ -225,9 +225,11 @@ class citaController:
             UPDATE cita
             SET fecha = %s,
             hora = %s,
-            id_usuario = %s
+            id_usuario = %s,
+            ubicacion = %s,
+            salas = %s                           
             WHERE id = %s
-            """,(cita.fecha,cita.hora,cita.id_usuario,cita.id,))
+            """,(cita.fecha,cita.hora,cita.id_usuario,cita.ubicacion, cita.salas,cita.id,))
             conn.commit()
            
             return {"resultado": "cita actualizada correctamente"} 
