@@ -11,6 +11,8 @@ class User(BaseModel):
     telefono:str
     id_rol: int
     estado:bool
+    genero: str= None
+    edad: int = None
     
 class Login(BaseModel):
     usuario: str

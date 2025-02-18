@@ -58,7 +58,8 @@ class citaController:
             cursor = conn.cursor()
             cursor.execute("""
                            
-                          SELECT cita.fecha,  cita.hora, usuario.nombre AS nombre_usuario,  paciente.nombre AS nombre_paciente, cita.id   
+                          SELECT cita.fecha,  cita.hora, usuario.nombre AS nombre_usuario,  paciente.nombre AS nombre_paciente, 
+                           cita.id, cita.ubicacion, cita.salas, cita.id_usuario
             FROM cita
             INNER JOIN usuario AS usuario ON cita.id_usuario = usuario.id
             INNER JOIN usuario AS paciente ON cita.id_paciente = paciente.id 
@@ -75,7 +76,13 @@ class citaController:
                     'hora':hora_v,
                     'medico':data[2],
                     'paciente':data[3],
-                    'id':data[4]
+                    'id':data[4],
+                    'ubicacion':data[5],
+                    'salas':data[6],
+                    'id_usuario':data[7]
+
+
+
 
                 
                 }
@@ -101,7 +108,8 @@ class citaController:
             cursor = conn.cursor()
             cursor.execute("""
                            
-                          SELECT cita.fecha,  cita.hora, usuario.nombre AS nombre_usuario,  paciente.nombre AS nombre_paciente, cita.id   
+                          SELECT cita.fecha,  cita.hora, usuario.nombre AS nombre_usuario,  paciente.nombre AS nombre_paciente, cita.id,
+                           cita.ubicacion, cita.salas
             FROM cita
             INNER JOIN usuario AS usuario ON cita.id_usuario = usuario.id
             INNER JOIN usuario AS paciente ON cita.id_paciente = paciente.id
@@ -117,7 +125,10 @@ class citaController:
                     'hora':str(data[1]),
                     'medico':data[2],
                     'paciente':data[3],
-                    'id':data[4]
+                    'id':data[4],
+                    'ubicacion':data[5],
+                    'salas':data[6]
+
 
                 
                 }
@@ -141,7 +152,8 @@ class citaController:
             cursor = conn.cursor()
             cursor.execute(""" 
                            
-                           SELECT cita.fecha,  cita.hora,  usuario.nombre AS nombre_usuario,  paciente.nombre AS nombre_paciente , cita.id AS id_cita
+                           SELECT cita.fecha,  cita.hora,  usuario.nombre AS nombre_usuario,  paciente.nombre AS nombre_paciente , cita.id AS id_cita,
+                           cita.ubicacion, cita.salas
                             FROM cita
                              INNER JOIN usuario AS usuario ON cita.id_usuario = usuario.id
                              INNER JOIN usuario AS paciente ON cita.id_paciente = paciente.id WHERE 
@@ -157,7 +169,10 @@ class citaController:
                     'hora':str(data[1]),
                     'medico':data[2],
                     'paciente':data[3],
-                    'id_cita':data[4]
+                    'id_cita':data[4],
+                    'ubicacion':data[5],
+                    'salas':data[6],
+
                 
                 }
                 payload.append(content)

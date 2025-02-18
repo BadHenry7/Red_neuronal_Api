@@ -22,7 +22,7 @@ class UserController:
               
                 return jsonable_encoder(content)
             else:   
-                cursor.execute("INSERT INTO usuario (usuario,password,nombre,apellido,documento,telefono,id_rol,estado) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (user.usuario,user.password,user.nombre,user.apellido,user.documento,user.telefono,user.id_rol,user.estado))
+                cursor.execute("INSERT INTO usuario (usuario,password,nombre,apellido,documento,telefono,id_rol,estado, genero, edad) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (user.usuario,user.password,user.nombre,user.apellido,user.documento,user.telefono,user.id_rol,user.estado, user.genero, user.edad,))
                 conn.commit()
                 conn.close()
                 id=cursor.lastrowid
