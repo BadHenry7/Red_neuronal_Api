@@ -78,8 +78,8 @@ class ModuloxPerfilController:
             cursor = conn.cursor() 
             cursor.execute("""SELECT mxp.id_modulo, mxp.estado 
                            FROM moduloxperfil as mxp
-                           inner join usuario as u ON mxp.id_rol=u.id_rol
-                           WHERE u.id_rol = %s
+                           inner join rol as r ON mxp.id_rol=r.id
+                           WHERE r.id =%s
                            
                            
                            """, (moduloxperfil.id_rol,))
