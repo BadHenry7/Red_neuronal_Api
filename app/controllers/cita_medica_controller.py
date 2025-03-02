@@ -10,7 +10,7 @@ class citaController:
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO cita (fecha,hora,estado,id_usuario,id_paciente) VALUES (%s,%s,%s,%s,%s)", (cita.fecha,cita.hora,cita.estado,cita.id_usuario,cita.id_paciente))
+            cursor.execute("INSERT INTO cita (fecha,hora,estado,id_usuario,id_paciente, ubicacion) VALUES (%s,%s,%s,%s,%s,%s)", (cita.fecha,cita.hora,cita.estado,cita.id_usuario,cita.id_paciente, cita.ubicacion,))
             conn.commit()
             conn.close()
             return {"resultado": "Cita añadida correctamente"}

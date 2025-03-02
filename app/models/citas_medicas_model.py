@@ -8,6 +8,7 @@ class Citasm(BaseModel):
     id_usuario:int
     estado: bool
     id_paciente:int
+    ubicacion: str=None
 
 class Buscar(BaseModel):
     id_paciente:int
