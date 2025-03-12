@@ -2,10 +2,12 @@ import mysql.connector
 from fastapi import HTTPException, UploadFile
 from app.config.db_config import get_db_connection
 from app.models.user_model import Login, Token
+from app.models.token_model import *
 from fastapi.encoders import jsonable_encoder
 from typing import List
 from datetime import datetime, timedelta
 import jwt
+
 
 SECRET_KEY = "fsdfsdfsdfsdfs"
 
@@ -40,3 +42,16 @@ class TokenController:
             return {"message": "Token expirado"}
         except jwt.InvalidTokenError:
             return {"message": "Token invalido"}
+        
+
+    def generate_token_google(self, user: User_token):
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM usuario where estado!=0 AND usuario = %s",(user.usuario,))
+        result = cursor.fetchall()
+        if result:
+            access_token_expires = timedelta(minutes=50)
+            access_token = self.create_access_token(data={"sub": user.usuario}, expires_delta=access_token_expires)
+            return {"access_token": access_token}
+        else:
+            return {"message": "Credenciales incorrectas"}
