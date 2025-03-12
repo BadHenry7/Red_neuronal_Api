@@ -36,6 +36,10 @@ class Actualizar(BaseModel):
     telefono:str
     id_rol:int
     estado: bool
+    genero: str= None
+    edad: int = None
+    password: str= None
+    
 
 
 
@@ -59,3 +63,18 @@ class Token(BaseModel):
     token: str
 
       
+class Verif_user(BaseModel):
+    id: int= None
+    id_usuario: int= None
+    google_id: str
+    foto: str
+    access_token: str
+    estado: bool
+    usuario: str
+    nombre: str
+    apellido: str
+
+
+class login_google(BaseModel):
+    verif_user: Verif_user
+    user: User

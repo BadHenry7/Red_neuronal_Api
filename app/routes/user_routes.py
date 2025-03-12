@@ -79,6 +79,11 @@ async def login(user: Login):
     rpta = nuevo_usuario.login(user)
     return rpta
 
+@router.post("/verif_user")
+async def verif_user(user: Verif_user):
+    rpta = nuevo_usuario.verif_user(user)
+    return rpta
+
 
 @router.put("/estado_user")
 async def estado_user(user: Estado):
