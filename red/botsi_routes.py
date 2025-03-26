@@ -7,6 +7,32 @@ import joblib
 
 router = APIRouter()
 
+import requests
+
+def descargar_archivo(url, nombre_destino):
+    if not os.path.exists(nombre_destino):
+        print(f"Descargando {nombre_destino}...")
+        respuesta = requests.get(url, stream=True)
+        with open(nombre_destino, 'wb') as archivo:
+            for chunk in respuesta.iter_content(chunk_size=8192):
+                archivo.write(chunk)
+        print(f"{nombre_destino} descargado exitosamente.")
+    else:
+        print(f"{nombre_destino} ya existe. No se descarga.")
+
+# Reemplaza estos links con tus enlaces de descarga directa:
+modelo_url = "https://itsasharepoint-my.sharepoint.com/personal/hdavidromero_unibarranquilla_edu_co/_layouts/15/download.aspx?share=EdP1tAv5S5xIsOpZkUwevHcBsBbXhjBMdeNe9-aPty8NkQ"
+encoder_url = "https://itsasharepoint-my.sharepoint.com/personal/hdavidromero_unibarranquilla_edu_co/_layouts/15/download.aspx?share=EQC3hQSbUSVPimRXnUfjxRwBj0TareyGaU5Bio5zHnPYqQ"
+
+
+# Ruta donde deseas guardar
+ruta_modelo = "red/smartbot_model.pkl"
+ruta_encoder = "red/smartbot_encoder.pkl"
+
+# Llama la descarga antes de iniciar tu app
+descargar_archivo(modelo_url, ruta_modelo)
+descargar_archivo(encoder_url, ruta_encoder)
+
 # Cargar el dataset
 current_dir = os.path.dirname(__file__)  
 dataset_path = os.path.join(current_dir, "../red/dataset2.csv")  
