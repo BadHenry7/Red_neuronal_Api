@@ -21,8 +21,8 @@ def descargar_archivo(url, nombre_destino):
         print(f"{nombre_destino} ya existe. No se descarga.")
 
 # Reemplaza estos links con tus enlaces de descarga directa:
-modelo_url = "https://itsasharepoint-my.sharepoint.com/personal/hdavidromero_unibarranquilla_edu_co/_layouts/15/download.aspx?share=EdP1tAv5S5xIsOpZkUwevHcBsBbXhjBMdeNe9-aPty8NkQ"
-encoder_url = "https://itsasharepoint-my.sharepoint.com/personal/hdavidromero_unibarranquilla_edu_co/_layouts/15/download.aspx?share=EQC3hQSbUSVPimRXnUfjxRwBj0TareyGaU5Bio5zHnPYqQ"
+modelo_url = "https://itsaedu-my.sharepoint.com/:u:/g/personal/hdavidromero_unibarranquilla_edu_co/EdP1tAv5S5xIsOpZkUwevHcBsBbXhjBMdeNe9-aPty8NkQ?e=TewQmf"
+encoder_url = "https://itsaedu-my.sharepoint.com/:u:/g/personal/hdavidromero_unibarranquilla_edu_co/EQC3hQSbUSVPimRXnUfjxRwBj0TareyGaU5Bio5zHnPYqQ?e=Vk3zqB"
 
 
 # Ruta donde deseas guardar
