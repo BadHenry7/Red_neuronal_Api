@@ -59,6 +59,8 @@ ngrok http 5173   (5173 es el de svelte)
 
 
    
+ngrok http 8000  
+ngrok http 5173   
 
 
   
@@ -69,7 +71,29 @@ pip install scikit-learn
 pip install matplotlib
 
 
+-->Para machine learning(Random Forest)
+pip install pandas
+pip install numpy
+pip install scikit-learn
+pip install matplotlib
+pip install imbalanced-learn
+pip install joblib
+
+
 -->Para el token:
 
 pip install jwt
 pip install PyJWT
+
+
+CANCELAR COMMIT:
+git reset HEAD~1
+
+
+------Para dynamodb:
+pip install boto3
+
+
+aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+aws_region = os.getenv('AWS_REGION')
