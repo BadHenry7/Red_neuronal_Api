@@ -10,6 +10,7 @@ PyJWT
 boto3==1.37.18
 imbalanced-learn
 joblib
+requests
 
 # tensorflow
 # keras
