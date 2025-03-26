@@ -22,6 +22,11 @@ async def post_citas_users(cita: Buscar):
     rpta = nueva_cita.post_citas_users(cita)
     return rpta
 
+@router.post("/get_ultima_cita")
+async def get_ultima_cita(cita: Buscar_cedula):
+    rpta = nueva_cita.get_ultima_cita(cita)
+    return rpta
+
 
 @router.post("/post_citas_doctor")
 async def post_citas_doctor(cita: Buscar):

@@ -1,7 +1,7 @@
 import mysql.connector
 from fastapi import HTTPException
 from app.config.db_config import get_db_connection
-from app.models.citas_medicas_model import Citasm,Buscar,Reportesss, EditarCita,Chaocita,Upditon,Reportes_medico
+from app.models.citas_medicas_model import *
 from fastapi.encoders import jsonable_encoder
 from datetime import timedelta
 class citaController:
@@ -703,6 +703,47 @@ class citaController:
                
             else:
                 raise HTTPException(status_code=404, detail="citas not found")  
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()
+
+
+    def get_ultima_cita(self, user: Buscar_cedula):
+        
+        try:
+            print ("-----", user)
+            print ("-----", user.cedula)
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""SELECT c.fecha, 
+                p.nombre AS paciente_nombre, 
+                p.documento AS paciente_documento, 
+                d.nombre AS doctor_nombre
+                FROM cita AS c
+                INNER JOIN usuario AS p ON c.id_paciente = p.id
+                INNER JOIN usuario AS d ON c.id_usuario = d.id
+                WHERE p.documento = %s
+                ORDER BY c.fecha DESC
+                LIMIT 1 """, (user.cedula,))
+            result = cursor.fetchone()
+            payload = []
+            content = {} 
+            
+            content={
+                   
+                    'fecha':result[0],
+                    'doctor':result[3],
+            }
+            payload.append(content)
+            
+            json_data = jsonable_encoder(content)            
+            if result:
+               return  json_data
+            else:
+                raise HTTPException(status_code=404, detail="User not found")  
                 
         except mysql.connector.Error as err:
             conn.rollback()
