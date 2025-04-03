@@ -22,10 +22,6 @@ async def post_citas_users(cita: Buscar):
     rpta = nueva_cita.post_citas_users(cita)
     return rpta
 
-@router.post("/get_ultima_cita")
-async def get_ultima_cita(cita: Buscar_cedula):
-    rpta = nueva_cita.get_ultima_cita(cita)
-    return rpta
 
 
 @router.post("/post_citas_doctor")
@@ -123,3 +119,31 @@ async def historia_clinica(historia_clinica: Buscar):
 async def historia_clinica_user(historia_clinica: Buscar):
     rpta = nueva_cita.historia_clinica_user(historia_clinica)
     return rpta
+
+
+#--------------Ruta para el chatbox
+@router.post("/get_ultima_cita")
+async def get_ultima_cita(cita: Buscar_cedula):
+    rpta = nueva_cita.get_ultima_cita(cita)
+    return rpta
+
+@router.post("/get_diagnosticos_chatbox")
+async def get_diagnosticos_chatbox(cita: Buscar_cedula):
+    rpta = nueva_cita.get_diagnosticos_chatbox(cita)
+    return rpta
+
+@router.post("/get_recomendaciones_chatbox")
+async def get_recomendaciones_chatbox(cita: Buscar_cedula):
+    rpta = nueva_cita.get_recomendaciones_chatbox(cita)
+    return rpta
+
+@router.post("/get_sintomas_chatbox")
+async def get_sintomas_chatbox(cita: Buscar_cedula):
+    rpta = nueva_cita.get_sintomas_chatbox(cita)
+    return rpta
+
+@router.post("/get_ubicacion_chatbox")
+async def get_ubicacion_chatbox(cita: Buscar_cedula):
+    rpta = nueva_cita.get_ubicacion_chatbox(cita)
+    return rpta
+

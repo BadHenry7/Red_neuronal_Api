@@ -710,6 +710,7 @@ class citaController:
             conn.close()
 
 
+#-----------------------------------------------------------------------------Consultas para chatbox----------------------------------------------------------
     def get_ultima_cita(self, user: Buscar_cedula):
         
         try:
@@ -726,7 +727,7 @@ class citaController:
                 INNER JOIN usuario AS p ON c.id_paciente = p.id
                 INNER JOIN usuario AS d ON c.id_usuario = d.id
                 WHERE p.documento = %s
-                ORDER BY c.fecha DESC
+                ORDER BY c.fecha ASC
                 LIMIT 1 """, (user.cedula,))
             result = cursor.fetchone()
             payload = []
@@ -737,6 +738,171 @@ class citaController:
                     'fecha':result[0],
                     'doctor':result[3],
             }
+            payload.append(content)
+            
+            json_data = jsonable_encoder(content)            
+            if result:
+               return  json_data
+            else:
+                raise HTTPException(status_code=404, detail="User not found")  
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()
+
+
+    def get_diagnosticos_chatbox(self, user: Buscar_cedula):
+        
+        try:
+            print ("-----", user)
+            print ("-----", user.cedula)
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""SELECT d.resultado, d.descripcion
+                           FROM diagnosticos as d
+                           INNER JOIN cita as c ON d.id_cita=c.id
+                           INNER JOIN usuario as u ON c.id_paciente=u.id
+                           WHERE u.documento=%s
+                           ORDER BY d.create 
+                           DESC
+                           LIMIT 1
+
+                 """, (user.cedula,))
+            result = cursor.fetchone()
+            payload = []
+            content = {} 
+            
+            content={
+                   
+                    'resultado':result[0],
+                    'descripcion':result[1],
+
+            }
+            payload.append(content)
+            
+            json_data = jsonable_encoder(content)            
+            if result:
+               return  json_data
+            else:
+                raise HTTPException(status_code=404, detail="User not found")  
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()
+
+    def get_recomendaciones_chatbox(self, user: Buscar_cedula):
+        
+        try:
+            print ("-----", user)
+            print ("-----", user.cedula)
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""SELECT d.Observacion
+                           FROM diagnosticos as d
+                           INNER JOIN cita as c ON d.id_cita=c.id
+                           INNER JOIN usuario as u ON c.id_paciente=u.id
+                           WHERE u.documento=%s
+                           ORDER BY d.create 
+                           DESC
+                           LIMIT 1
+
+                 """, (user.cedula,))
+            result = cursor.fetchone()
+            payload = []
+            content = {} 
+            
+            content={
+                   
+                    'observacion':result[0],
+            }
+            payload.append(content)
+            
+            json_data = jsonable_encoder(content)            
+            if result:
+               return  json_data
+            else:
+                raise HTTPException(status_code=404, detail="User not found")  
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()
+    #------Mostrar sintoma y descripcion de su ultima consulta
+    def get_sintomas_chatbox(self, user: Buscar_cedula):
+        
+        try:
+            print ("-----", user)
+            print ("-----", user.cedula)
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""SELECT s.nombre, s.descripcion  
+                           FROM sintomas as s
+                           INNER JOIN cita as c ON s.id_cita=c.id
+                           INNER JOIN usuario as u ON c.id_paciente=u.id
+                           WHERE u.documento=%s
+                           ORDER BY s.create
+                           ASC
+                           LIMIT 1
+
+                 """, (user.cedula,))
+            result = cursor.fetchone()
+            payload = []
+            content = {} 
+            
+            content={
+                   
+                    'nombre':result[0],
+                    'descripcion':result[1]
+
+            }
+            payload.append(content)
+            
+            json_data = jsonable_encoder(content)            
+            if result:
+               return  json_data
+            else:
+                raise HTTPException(status_code=404, detail="User not found")  
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()
+    
+    #------Mostrar ubicacion y sala de la cita proxima
+    def get_ubicacion_chatbox(self, user: Buscar_cedula):
+        
+        try:
+            print ("-----", user)
+            print ("-----", user.cedula)
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""SELECT c.ubicacion, c.salas
+                            FROM cita as c 
+                            INNER JOIN usuario as u ON c.id_paciente=u.id
+                            WHERE u.documento=%s AND c.estado=1
+                            ORDER BY c.fecha 
+                            DESC
+                            LIMIT 1;
+
+                 """, (user.cedula,))
+            result = cursor.fetchone()
+            payload = []
+            content = {} 
+            
+            if result:
+                content={
+                   
+                    'ubicacion':result[0],
+                    'salas':result[1],
+
+                }
+    
             payload.append(content)
             
             json_data = jsonable_encoder(content)            
