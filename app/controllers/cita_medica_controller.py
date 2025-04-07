@@ -678,7 +678,11 @@ class citaController:
             usuario as doctor ON doctor.id=cita.id_usuario
             JOIN 
             sintomas ON cita.id= sintomas.id_cita
-            WHERE usuario.id=%s AND diagnosticos.fecha_diagnostico= ( SELECT MAX(diagnosticos.fecha_diagnostico) FROM diagnosticos);
+            WHERE usuario.id=%s  AND diagnosticos.fecha_diagnostico = (
+                SELECT MAX(d.fecha_diagnostico)
+                FROM diagnosticos d
+                JOIN cita c ON d.id_cita = c.id
+                WHERE c.id_paciente = usuario.id)
                            """,(historia_clinica.id_paciente,))
             result = cursor.fetchall()
             payload = []
