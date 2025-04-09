@@ -293,6 +293,9 @@ class UserController:
     def update_user(self, user: Actualizar):
         try:
             print("user", user)
+            genero = user.genero if user.genero is not None else actual[0]
+            edad = user.edad if user.edad is not None else actual[1]
+            password = user.password if user.password is not None else actual[2]
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute("""
@@ -308,7 +311,7 @@ class UserController:
             edad=%s, 
             password=%s
             WHERE id = %s
-            """,(user.usuario,user.nombre,user.apellido,user.documento,user.telefono,user.id_rol,user.estado,user.genero, user.edad,user.password,user.id,))
+            """,(user.usuario,user.nombre,user.apellido,user.documento,user.telefono,user.id_rol,user.estado,genero, edad,password,user.id,))
             conn.commit()
            
             return {"resultado": "Usuario actualizado correctamente"} 
