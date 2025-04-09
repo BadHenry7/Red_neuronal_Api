@@ -293,11 +293,15 @@ class UserController:
     def update_user(self, user: Actualizar):
         try:
             print("user", user)
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT genero, edad,id_rol password FROM usuario WHERE id = %s", (user.id,))
+            actual = cursor.fetchone()
             genero = user.genero if user.genero is not None else actual[0]
             edad = user.edad if user.edad is not None else actual[1]
             password = user.password if user.password is not None else actual[2]
-            conn = get_db_connection()
-            cursor = conn.cursor()
+            rol=user.id_rol if user.id_rol is not None else actual[3]
+            
             cursor.execute("""
             UPDATE usuario
             SET usuario = %s,
