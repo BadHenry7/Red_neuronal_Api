@@ -315,7 +315,7 @@ class UserController:
             edad=%s, 
             password=%s
             WHERE id = %s
-            """,(user.usuario,user.nombre,user.apellido,user.documento,user.telefono,user.id_rol,user.estado,genero, edad,password,user.id,))
+            """,(user.usuario,user.nombre,user.apellido,user.documento,user.telefono,rol,user.estado,genero, edad,password,user.id,))
             conn.commit()
            
             return {"resultado": "Usuario actualizado correctamente"} 
