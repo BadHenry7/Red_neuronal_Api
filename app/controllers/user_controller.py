@@ -27,7 +27,7 @@ class UserController:
                 conn.commit()
                 conn.close()
                 id=cursor.lastrowid
-                return {id}#aja
+                return {"id": id, "Informacion": "Creado"}
 
         except mysql.connector.Error as err:
             conn.rollback()
