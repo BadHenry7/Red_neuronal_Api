@@ -136,7 +136,7 @@ import gdown
 
 router = APIRouter()
 
-import reques
+import requests
 
 def descargar_archivo(url, nombre_destino):
     if os.path.exists(nombre_destino):
