@@ -182,3 +182,44 @@ ruta_encoder =  os.path.join(current_dir, "../red/smartbot_encoder.pkl")
 # Llama la descarga antes de iniciar tu app
 descargar_archivo(modelo_url, ruta_modelo)
 descargar_archivo(encoder_url, ruta_encoder)
+
+# Cargar el dataset
+current_dir = os.path.dirname(__file__)  
+dataset_path = os.path.join(current_dir, "../red/dataset2.csv")  
+data = pd.read_csv(dataset_path, sep=";")
+
+# Cargar el modelo RandomForest y el LabelEncoder
+model_path = os.path.join(current_dir, "../red/smartbot_model.pkl")
+encoder_path = os.path.join(current_dir, "../red/smartbot_encoder.pkl")
+
+modelo = joblib.load(model_path)
+label_encoder = joblib.load(encoder_path)
+
+# Obtener lista de síntomas
+symptoms = data.drop(columns=["diseases"]).columns.tolist()
+
+
+# Modelo para recibir los síntomas seleccionados
+class PredictionRequest(BaseModel):
+    selected_symptoms: list[str]
+
+@router.get("/sintomas")
+async def get_symptoms():
+    return {"sintomas": symptoms}
+
+@router.post("/predict")
+async def predict_disease(request: PredictionRequest):
+    selected = request.selected_symptoms
+    
+    # Crear vector binario de entrada
+    input_vector = [1 if symptom in selected else 0 for symptom in symptoms]
+    input_vector = np.array(input_vector).reshape(1, -1)
+    
+    # Realizar predicción
+    pred = modelo.predict(input_vector)
+    enfermedad_predicha = label_encoder.inverse_transform(pred)[0]
+    
+    return {"enfermedad": enfermedad_predicha}
+
+
+
