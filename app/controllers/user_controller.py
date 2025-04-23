@@ -29,6 +29,7 @@ class UserController:
                 id=cursor.lastrowid
                 return {"id": id, "Informacion": "Creado"}
 
+
         except mysql.connector.Error as err:
             conn.rollback()
         finally:
@@ -152,15 +153,15 @@ class UserController:
             cursor.execute("""SELECT usuario.*, rol.*
                 FROM usuario
                 JOIN rol ON usuario.id_rol = rol.id
-                        WHERE usuario.id_rol!=1;
-
-                           
-                           
+                        WHERE usuario.id_rol!=1
                            """)
             result = cursor.fetchall()
+            usuarios_ordenados = sorted(result, key=lambda  data: (not data[8], data[1].lower()))
+            
             payload = []
             content = {} 
-            for data in result:
+            for data in usuarios_ordenados:
+                print (data[8])
                 content={
                     'id':data[0],
                     'usuario':data[1],
@@ -171,7 +172,6 @@ class UserController:
                     'telefono':data[6],
                     'id_rol':data[7],
                     'estado':data[8],
-
                     'nombre_rol':data[14],
                    
 
@@ -195,9 +195,11 @@ class UserController:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM usuario WHERE id_rol=3")
             result = cursor.fetchall()
+            usuarios_ordenados = sorted(result, key=lambda  data: (not data[8], data[1].lower()))
+
             payload = []
             content = {} 
-            for data in result:
+            for data in usuarios_ordenados:
                 content={
                     'id':data[0],
                     'usuario':data[1],
@@ -376,6 +378,7 @@ class UserController:
                     'usuario':data[1],
                     'password':data[2],
                     'nombre':data[3],
+                    'apellido': data [4],
                     'id':data[0],
                     'rol':data[7],
 
@@ -477,7 +480,7 @@ class UserController:
     #         return res.json(rows[0]);  // Si existe, devolver sus datos
     #     } else {
     #         console.log("Nuevo usuario, registrándolo en la BD...");
-    #         await db.execute('INSERT INTO usuarios (google_id,     access_token) VALUES (?, ?, ?, ?, ?)', 
+    #         await db.execute('4 INTO usuarios (google_id,     access_token) VALUES (?, ?, ?, ?, ?)', 
     #             [google_id, nombre, email, foto, access_token]);
 
     #         return res.json({ google_id, nombre, email, foto });

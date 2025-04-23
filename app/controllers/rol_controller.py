@@ -55,7 +55,8 @@ class RolController:
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM rol")
-            result = cursor.fetchall()
+            rv = cursor.fetchall()
+            result = sorted(rv, key=lambda  data: (not data[3], data[1].lower()))
             payload = []
             content = {} 
             for data in result:

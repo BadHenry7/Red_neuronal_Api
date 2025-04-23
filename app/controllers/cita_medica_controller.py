@@ -153,17 +153,19 @@ class citaController:
             cursor.execute(""" 
                            
                            SELECT cita.fecha,  cita.hora,  usuario.nombre AS nombre_usuario,  paciente.nombre AS nombre_paciente , cita.id AS id_cita,
-                           cita.ubicacion, cita.salas
+                           cita.ubicacion, cita.salas, cita.estado
                             FROM cita
                              INNER JOIN usuario AS usuario ON cita.id_usuario = usuario.id
                              INNER JOIN usuario AS paciente ON cita.id_paciente = paciente.id WHERE 
-                            cita.id_paciente =%s AND cita.estado=1
+                            cita.id_paciente =%s 
                            
-                           """,(cita.id_paciente,))
+                           """,(cita.id_paciente,))#AND cita.estado=1
             result = cursor.fetchall()
+            usuarios_activos = list(filter(lambda u: u[7], result))
+
             payload = []
             content = {} 
-            for data in result:
+            for data in usuarios_activos:
                 content={
                     'fecha':data[0],
                     'hora':str(data[1]),

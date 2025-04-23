@@ -9,9 +9,12 @@ class sintomasController:
     def create_sintomas(self, sintomas: Sintomas):   #
 
         try:
+            normalizar_nombre = lambda nombre: nombre.strip().capitalize()
+            
+            print(normalizar_nombre(sintomas.nombre))  
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO sintomas (nombre,descripcion,estado,id_cita) VALUES (%s,%s,%s,%s)", (sintomas.nombre, sintomas.descripcion, sintomas.estado,sintomas.id_cita))
+            cursor.execute("INSERT INTO sintomas (nombre,descripcion,estado,id_cita) VALUES (%s,%s,%s,%s)", (normalizar_nombre(sintomas.nombre), normalizar_nombre(sintomas.descripcion), sintomas.estado,sintomas.id_cita))
             conn.commit()
             conn.close()
             return {"resultado": "sintoma generada correctamente"}
