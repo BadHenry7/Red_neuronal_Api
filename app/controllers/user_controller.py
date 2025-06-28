@@ -542,57 +542,67 @@ class UserController:
         PIXEL_REF = 368                # Medida en píxeles de esa persona (ajustar luego con print si es necesario)
 
         # Inicializa MediaPipe Pose
-        mp_pose = mp.solutions.pose
-        pose = mp_pose.Pose()
-        mp_drawing = mp.solutions.drawing_utils
+        mp_pose = mp.solutions.pose # Esta es el Módulo para detectar posturas
+        pose = mp_pose.Pose() #Crea una instancia de detección de pose
+        mp_drawing = mp.solutions.drawing_utils #Utilidad para dibujar el esqueleto en la imagen
         historial_alturas = []
 
-        # Abre la cámara
+        # Abre la cámara (el  0  significa que abre  la cámara por defecto)
         cap = cv2.VideoCapture(0)
         while cap.isOpened():
-            ret, frame = cap.read()
+            ret, frame = cap.read()    # Leer frame de la cámara
             if not ret:
                 break
 
             # Rota la imagen para cámara en vertical
             frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
-            # Convierte a RGB
+            # Convierte de BGR ( el cual es el formato que usa OpenCV) a RGB (formato que usa MediaPipe)
             image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+            #Procesa la imagen para detectar landmarks del cuerpo  | Pose es la instancia que se creo arriba
             results = pose.process(image_rgb)
 
             if results.pose_landmarks:
                 # Dibuja puntos y líneas del esqueleto
                 mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
+                    # Obtiene el alto y ancho del frame
                 h, w, _ = frame.shape
 
-                # Punto superior: nariz
+                # Obtiene la coordenada Y de la nariz 
                 head_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y * h)
 
-                # Puntos inferiores: tobillos
+                # Obtiene las coordenadas Y de los tobillos
                 left_ankle_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE].y * h)
                 right_ankle_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ANKLE].y * h)
+                
+                #Toma el tobillo más bajo
                 foot_y = max(left_ankle_y, right_ankle_y)
 
-                # Medida en píxeles
+                # Calcula la altura en píxeles
                 altura_px = foot_y - head_y
+
                 #print("Altura en píxeles detectada:", altura_px)
 
-                # Descomenta esto para calibrar
-                # print("Altura en píxeles detectada:", altura_px)
 
                 # Estimación de altura
                 altura_estim = (altura_px / PIXEL_REF) * ALTURA_REFERENCIA_M
                 print("Estatura  detectada:", altura_estim)
 
 
-                # Mostrar resultado en pantalla
+                # Mostrar resultado en pantalla dentro del video
                 cv2.putText(frame, f"Altura aprox: {altura_estim:.2f} m", (10, 50),
                             cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
+
+
+                # Codifica el frame como imagen JPEG
                 flag, encodedImage = cv2.imencode(".jpg", frame)
                 if not flag:
                     continue
+
+                
+
                 yield (b'--frame\r\n'
                 b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')
 
@@ -614,7 +624,10 @@ class UserController:
             # if cv2.waitKey(1) & 0xFF == 27:  # Presiona ESC para salir
             #     break
         print("ahora deberia de cerrarseeeeeeeeeeee")
+
+        # Libera la cámara 
         cap.release()
+        #Cierra todas las ventanas creadas por OpenCV 
         cv2.destroyAllWindows()
 
            
@@ -622,6 +635,10 @@ class UserController:
         print("entra primera vez")
         return StreamingResponse(self.Estatura_user(id),
                              media_type="multipart/x-mixed-replace; boundary=frame")
+    
+    #StreamingResponse, es una clase de FastAPI que permite enviar datos como un flujo continuo, útil para video o audio.
+    #Estatura_user devuelve frames JPEG uno a uno (cada imagen del video).
+   # media_type="multipart/x-mixed-replace; boundary=frame": Es usado para enviar múltiples imágenes como un solo flujo. Así se simula el video en el navegador.
             
 ##user_controller = UserController()
 
