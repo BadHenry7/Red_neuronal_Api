@@ -10,7 +10,7 @@ import joblib
 # Cargar el dataset
 df = pd.read_csv("dataset2.csv", sep=";")
 
-# **🔹 Eliminar espacios en los nombres de las columnas**
+#  Eliminar espacios en los nombres de las columnas**
 df.columns = df.columns.str.strip()
 
 # Aplicar LabelEncoder a las enfermedades
@@ -25,7 +25,7 @@ y = df['diseases']  # La enfermedad en formato numérico
 oversampler = RandomOverSampler(random_state=42)
 X_resampled, y_resampled = oversampler.fit_resample(X, y)
 
-# **🔹 Asegurar que los nombres de las columnas de X están limpios**
+#  Asegurar que los nombres de las columnas de X están limpios**
 X_resampled.columns = X_resampled.columns.str.strip()
 
 # Verificar distribución después del balanceo
@@ -44,7 +44,7 @@ accuracy = accuracy_score(y_test, y_pred)
 print(f'Precisión del modelo: {accuracy:.2f}')
 print(classification_report(y_test, y_pred))
 
-# **🔹 Obtener la lista de síntomas disponibles (sin espacios extra)**
+#  Obtener la lista de síntomas disponibles (sin espacios extra)**
 sintomas_disponibles = list(X.columns)
 
 print("Lista de síntomas disponibles:", sintomas_disponibles)
@@ -53,7 +53,7 @@ print("Lista de síntomas disponibles:", sintomas_disponibles)
 entrada_usuario = input("Ingrese los síntomas separados por comas: ").strip().lower()
 sintomas_usuario = [sintoma.strip() for sintoma in entrada_usuario.split(",")]
 
-# **🔹 Convertir los síntomas ingresados en el mismo formato que los de X**
+#  Convertir los síntomas ingresados en el mismo formato que los de X**
 sintomas_validos = [s for s in sintomas_usuario if s in [x.lower() for x in sintomas_disponibles]]
 print("✅ Síntomas reconocidos:", sintomas_validos)
 
@@ -63,10 +63,10 @@ for sintoma in sintomas_validos:
     indice = [x.lower() for x in sintomas_disponibles].index(sintoma)
     nuevos_sintomas[0, indice] = 1
 
-# **🔹 Crear DataFrame con las mismas columnas que el modelo**
+#  Crear DataFrame con las mismas columnas que el modelo**
 nuevos_sintomas_df = pd.DataFrame(nuevos_sintomas, columns=sintomas_disponibles)
 
-# **🔹 Asegurar que las columnas están en el mismo orden que en X**
+#  Asegurar que las columnas están en el mismo orden que en X**
 nuevos_sintomas_df = nuevos_sintomas_df.reindex(columns=X.columns, fill_value=0)
 print("🔍 Entrada al modelo:\n", nuevos_sintomas_df)
 

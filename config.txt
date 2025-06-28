@@ -86,7 +86,24 @@ pip install jwt
 pip install PyJWT
 
 
-CANCELAR COMMIT:
+
+-->Autenticacion con gitlab:
+pip install fastapi
+pip install "uvicorn[standard]"
+pip install requests
+pip install python-multipart
+pip install python-jose
+pip install authlib
+pip install pyjwt
+
+
+
+
+
+
+
+
+DEVOLVER COMMIT:
 git reset HEAD~1
 
 
@@ -97,3 +114,10 @@ pip install boto3
 aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 aws_region = os.getenv('AWS_REGION')
+
+
+
+
+
+mediapipe:
+py -m pip install mediapipe opencv-python

@@ -1,6 +1,13 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from app.controllers.user_controller import *
 from app.models.user_model import User,Estado,Login,Buscar,Actualizar,Buscar_document
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from jose import JWTError, jwt 
+
+security = HTTPBearer()
+SECRET_KEY = "your-secret-key" 
+ALGORITHM = "HS256"
 
 
 router = APIRouter()
@@ -9,10 +16,20 @@ nuevo_usuario = UserController()
 
 
 @router.post("/create_user")
-async def create_user(user: User):
+async def create_user(user: User, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials  # Aquí tienes el token que mandaron
+    print("Token recibido:", token)
+    
+    # (Opcional) Verificar el token
+    try:
+        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        # Si quieres hacer algo con el decoded_token aquí, puedes
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+    
+    # Ya todo ok, crear usuario
     rpta = nuevo_usuario.create_user(user)
     return rpta
-
 
 @router.post("/get_user")
 async def get_user(user: Buscar):
@@ -90,4 +107,20 @@ async def estado_user(user: Estado):
     rpta = nuevo_usuario.estado_user(user)
     return rpta 
 
+
+@router.post("/Altura_paciente")
+async def Estatura_user(user: Estatura):
+    rpta = nuevo_usuario.Estatura_user(user)
+    return rpta 
+
+
+@router.get("/video_feed")
+async def video_feed(id: int):
+    rpta = nuevo_usuario.video_feed(id)
+    return rpta 
+
+@router.get("/Actualizar_estatura")
+async def Actualizar_estatura(user: Estatura_user):
+    rpta = nuevo_usuario.Actualizar_estatura(user)
+    return rpta 
 #v_usuario   

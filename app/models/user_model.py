@@ -78,3 +78,11 @@ class Verif_user(BaseModel):
 class login_google(BaseModel):
     verif_user: Verif_user
     user: User
+
+
+class Estatura (BaseModel):
+    image: str
+
+class Estatura_user (BaseModel):
+    id: int
+    estatura: str

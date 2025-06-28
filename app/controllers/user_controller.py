@@ -3,8 +3,14 @@ from fastapi import HTTPException, UploadFile
 from app.config.db_config import get_db_connection
 from app.models.user_model import *
 from fastapi.encoders import jsonable_encoder
+
 from typing import List
 import pandas as pd
+import cv2
+import mediapipe as mp
+import base64
+import numpy as np
+from fastapi.responses import HTMLResponse, StreamingResponse
 
 class UserController:
     
@@ -509,8 +515,113 @@ class UserController:
         finally:
             conn.close() 
 
-       
+    def Actualizar_estatura(self, promedio: str, id: int ):
+        try:
+            print ("id a actualizar", id)
+            print ("estatura", promedio)
 
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+            UPDATE usuario
+            SET
+            Estatura =  %s                
+            WHERE id = %s
+            """,(promedio,id))
+            conn.commit()
+           
+            return {"resultado": "Estatura actualizada correctamente "} 
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close() 
+
+    def Estatura_user(self, id):
+        ALTURA_REFERENCIA_M = 1.70    # Altura real de la persona de referencia (en metros)
+        PIXEL_REF = 368                # Medida en píxeles de esa persona (ajustar luego con print si es necesario)
+
+        # Inicializa MediaPipe Pose
+        mp_pose = mp.solutions.pose
+        pose = mp_pose.Pose()
+        mp_drawing = mp.solutions.drawing_utils
+        historial_alturas = []
+
+        # Abre la cámara
+        cap = cv2.VideoCapture(0)
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            # Rota la imagen para cámara en vertical
+            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
+            # Convierte a RGB
+            image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = pose.process(image_rgb)
+
+            if results.pose_landmarks:
+                # Dibuja puntos y líneas del esqueleto
+                mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+
+                h, w, _ = frame.shape
+
+                # Punto superior: nariz
+                head_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y * h)
+
+                # Puntos inferiores: tobillos
+                left_ankle_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE].y * h)
+                right_ankle_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ANKLE].y * h)
+                foot_y = max(left_ankle_y, right_ankle_y)
+
+                # Medida en píxeles
+                altura_px = foot_y - head_y
+                #print("Altura en píxeles detectada:", altura_px)
+
+                # Descomenta esto para calibrar
+                # print("Altura en píxeles detectada:", altura_px)
+
+                # Estimación de altura
+                altura_estim = (altura_px / PIXEL_REF) * ALTURA_REFERENCIA_M
+                print("Estatura  detectada:", altura_estim)
+
+
+                # Mostrar resultado en pantalla
+                cv2.putText(frame, f"Altura aprox: {altura_estim:.2f} m", (10, 50),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
+                flag, encodedImage = cv2.imencode(".jpg", frame)
+                if not flag:
+                    continue
+                yield (b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')
+
+            historial_alturas.append(altura_estim)
+
+
+
+            if len(historial_alturas) >= 10:
+                  promedio = sum(historial_alturas) / len(historial_alturas)
+                  print("ya", promedio, "y la id del usuario es", id)
+                  historial_alturas.clear()
+                  self.Actualizar_estatura(promedio, id)
+                 
+                  break
+
+            # # Mostrar ventana
+            # cv2.imshow("Altura con MediaPipe Pose", frame)
+            
+            # if cv2.waitKey(1) & 0xFF == 27:  # Presiona ESC para salir
+            #     break
+        print("ahora deberia de cerrarseeeeeeeeeeee")
+        cap.release()
+        cv2.destroyAllWindows()
+
+           
+    def video_feed(self, id: int):
+        print("entra primera vez")
+        return StreamingResponse(self.Estatura_user(id),
+                             media_type="multipart/x-mixed-replace; boundary=frame")
             
 ##user_controller = UserController()
 
