@@ -3,11 +3,11 @@ from app.controllers.user_controller import *
 from app.models.user_model import User,Estado,Login,Buscar,Actualizar,Buscar_document
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import JWTError, jwt 
 
-security = HTTPBearer()
-SECRET_KEY = "your-secret-key" 
-ALGORITHM = "HS256"
+
+# security = HTTPBearer()
+# SECRET_KEY = "your-secret-key" 
+# ALGORITHM = "HS256"
 
 
 router = APIRouter()
@@ -16,18 +16,7 @@ nuevo_usuario = UserController()
 
 
 @router.post("/create_user")
-async def create_user(user: User, credentials: HTTPAuthorizationCredentials = Depends(security)):
-    token = credentials.credentials  # Aquí tienes el token que mandaron
-    print("Token recibido:", token)
-    
-    # (Opcional) Verificar el token
-    try:
-        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        # Si quieres hacer algo con el decoded_token aquí, puedes
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Token inválido o expirado")
-    
-    # Ya todo ok, crear usuario
+async def create_user(user: User):
     rpta = nuevo_usuario.create_user(user)
     return rpta
 
