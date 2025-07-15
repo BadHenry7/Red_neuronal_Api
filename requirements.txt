@@ -14,5 +14,6 @@ requests
 tensorflow
 keras
 gdown
-
+opencv-python
+mediapipe
 # python-jose
