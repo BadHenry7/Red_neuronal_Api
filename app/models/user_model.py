@@ -21,6 +21,7 @@ class Login(BaseModel):
 
 class Buscar(BaseModel):
     id: int= None
+    id_telegram: int=None
 
 class Buscar_document(BaseModel):
     documento: str
