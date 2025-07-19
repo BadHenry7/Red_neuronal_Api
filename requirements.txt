@@ -16,4 +16,4 @@ keras
 gdown
 # opencv-python
 # mediapipe
-# python-jose
+python-jose
