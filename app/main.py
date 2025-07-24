@@ -31,16 +31,18 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
    allow_origins=[
-         "http://localhost:5173",
-        "http://localhost:3000",
-"http://localhost:4200",
-        "capacitor://localhost",      #
-        "https://localhost",         
-        "https://red-neuronal-api.onrender.com",
-        "https://api-nodejs-buxf.onrender.com",
-        "https://f882-191-110-53-32.ngrok-free.app",
-        "https://3f44-191-110-53-32.ngrok-free.app",
-        "https://red-neurolal-svelte.onrender.com",  # URL de ngrok
+         "http://localhost:5173",#Svelte
+        "http://localhost:3000",#Node creo
+        "http://localhost:4200",#Angular local
+        "capacitor://localhost",#Para celulares
+        "https://localhost",#Para celulares         
+        "https://red-neuronal-api.onrender.com",#EL MISMO XD
+        "https://api-nodejs-buxf.onrender.com",#Node
+        "https://f882-191-110-53-32.ngrok-free.app",#ngrok
+        "https://3f44-191-110-53-32.ngrok-free.app",#ngrok
+        "https://red-neurolal-svelte.onrender.com",  # URL de Svelte
+        "https://angular-red-neuronal.onrender.com" #URl de Angular
+
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
