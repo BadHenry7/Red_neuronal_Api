@@ -6,11 +6,11 @@ from fastapi.encoders import jsonable_encoder
 
 from typing import List
 import pandas as pd
-# import cv2
-# import mediapipe as mp
-# import base64
+import cv2
+import mediapipe as mp
+import base64
 import numpy as np
-#from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 
 class UserController:
     
@@ -537,104 +537,107 @@ class UserController:
         finally:
             conn.close() 
 
-    # def Estatura_user(self, id):
-    #     ALTURA_REFERENCIA_M = 1.70    # Altura real de la persona de referencia (en metros)
-    #     PIXEL_REF = 368                # Medida en píxeles de esa persona (ajustar luego con print si es necesario)
+    detener_captura = False
 
-    #     # Inicializa MediaPipe Pose
-    #     mp_pose = mp.solutions.pose # Esta es el Módulo para detectar posturas
-    #     pose = mp_pose.Pose() #Crea una instancia de detección de pose
-    #     mp_drawing = mp.solutions.drawing_utils #Utilidad para dibujar el esqueleto en la imagen
-    #     historial_alturas = []
+    def Estatura_user(self, id):
+        ALTURA_REFERENCIA_M = 1.70    # Altura real de la persona de referencia (en metros)
+        PIXEL_REF = 368                # Medida en píxeles de esa persona 
+        global detener_captura
+        detener_captura = False 
 
-    #     # Abre la cámara (el  0  significa que abre  la cámara por defecto)
-    #     cap = cv2.VideoCapture(0)
-    #     while cap.isOpened():
-    #         ret, frame = cap.read()    # Leer frame de la cámara
-    #         if not ret:
-    #             break
+        # Inicializa MediaPipe Pose
+        mp_pose = mp.solutions.pose # Esta es el Módulo para detectar posturas
+        pose = mp_pose.Pose() #Crea una instancia de detección de pose
+        mp_drawing = mp.solutions.drawing_utils #Utilidad para dibujar el esqueleto en la imagen
+        historial_alturas = []
 
-    #         # Rota la imagen para cámara en vertical
-    #         frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        # Abre la cámara (el  0  significa que abre  la cámara por defecto)
+        cap = cv2.VideoCapture(0)
+        while cap.isOpened()  and not detener_captura:
+            ret, frame = cap.read()    # Leer frame de la cámara
+            if not ret:
+                break
 
-    #         # Convierte de BGR ( el cual es el formato que usa OpenCV) a RGB (formato que usa MediaPipe)
-    #         image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            # Rota la imagen para cámara en vertical
+            #frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
-    #         #Procesa la imagen para detectar landmarks del cuerpo  | Pose es la instancia que se creo arriba
-    #         results = pose.process(image_rgb)
+            # Convierte de BGR ( el cual es el formato que usa OpenCV) a RGB (formato que usa MediaPipe)
+            image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    #         if results.pose_landmarks:
-    #             # Dibuja puntos y líneas del esqueleto
-    #             mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+            #Procesa la imagen para detectar landmarks del cuerpo  | Pose es la instancia que se creo arriba
+            results = pose.process(image_rgb)
 
-    #                 # Obtiene el alto y ancho del frame
-    #             h, w, _ = frame.shape
+            if results.pose_landmarks:
+                # Dibuja puntos y líneas del esqueleto
+                mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
-    #             # Obtiene la coordenada Y de la nariz 
-    #             head_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y * h)
+                    # Obtiene el alto y ancho del frame
+                h, w, _ = frame.shape
 
-    #             # Obtiene las coordenadas Y de los tobillos
-    #             left_ankle_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE].y * h)
-    #             right_ankle_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ANKLE].y * h)
+                # Obtiene la coordenada Y de la nariz 
+                head_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y * h)
+
+                # Obtiene las coordenadas Y de los tobillos
+                left_ankle_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE].y * h)
+                right_ankle_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ANKLE].y * h)
                 
-    #             #Toma el tobillo más bajo
-    #             foot_y = max(left_ankle_y, right_ankle_y)
+                #Toma el tobillo más bajo
+                foot_y = max(left_ankle_y, right_ankle_y)
 
-    #             # Calcula la altura en píxeles
-    #             altura_px = foot_y - head_y
+                # Calcula la altura en píxeles
+                altura_px = foot_y - head_y
 
-    #             #print("Altura en píxeles detectada:", altura_px)
-
-
-    #             # Estimación de altura
-    #             altura_estim = (altura_px / PIXEL_REF) * ALTURA_REFERENCIA_M
-    #             print("Estatura  detectada:", altura_estim)
+                #print("Altura en píxeles detectada:", altura_px)
 
 
-    #             # Mostrar resultado en pantalla dentro del video
-    #             cv2.putText(frame, f"Altura aprox: {altura_estim:.2f} m", (10, 50),
-    #                         cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
+                # Estimación de altura
+                altura_estim = (altura_px / PIXEL_REF) * ALTURA_REFERENCIA_M
+                print("Estatura  detectada:", altura_estim)
 
 
-    #             # Codifica el frame como imagen JPEG
-    #             flag, encodedImage = cv2.imencode(".jpg", frame)
-    #             if not flag:
-    #                 continue
+                # Mostrar resultado en pantalla dentro del video
+                cv2.putText(frame, f"Altura aprox: {altura_estim:.2f} m", (10, 50),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
+
+
+                # Codifica el frame como imagen JPEG
+                flag, encodedImage = cv2.imencode(".jpg", frame)
+                if not flag:
+                    continue
 
                 
 
-    #             yield (b'--frame\r\n'
-    #             b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')
+                yield (b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')
 
-    #         historial_alturas.append(altura_estim)
+            historial_alturas.append(altura_estim)
 
 
 
-    #         if len(historial_alturas) >= 10:
-    #               promedio = sum(historial_alturas) / len(historial_alturas)
-    #               print("ya", promedio, "y la id del usuario es", id)
-    #               historial_alturas.clear()
-    #               self.Actualizar_estatura(promedio, id)
+            if len(historial_alturas) >= 10:
+                  promedio = sum(historial_alturas) / len(historial_alturas)
+                  print("ya", promedio, "y la id del usuario es", id)
+                  historial_alturas.clear()
+                  #self.Actualizar_estatura(promedio, id)
                  
-    #               break
-
-    #         # # Mostrar ventana
-    #         # cv2.imshow("Altura con MediaPipe Pose", frame)
+                 
+            # # Mostrar ventana
+            # cv2.imshow("Altura con MediaPipe Pose", frame)
             
-    #         # if cv2.waitKey(1) & 0xFF == 27:  # Presiona ESC para salir
-    #         #     break
-    #     print("ahora deberia de cerrarseeeeeeeeeeee")
-
-    #     # Libera la cámara 
-    #     cap.release()
-    #     #Cierra todas las ventanas creadas por OpenCV 
-    #     cv2.destroyAllWindows()
+            # if cv2.waitKey(1) & 0xFF == 27:  # Presiona ESC para salir
+            #     break
+        print("ahora deberia de cerrarseeeeeeeeeeee")
+        self.Actualizar_estatura(promedio, id)
+        # Libera la cámara 
+        cap.release()
+        #Cierra todas las ventanas creadas por OpenCV 
+        cv2.destroyAllWindows()
 
            
-    # def video_feed(self, id: int):
-    #     print("entra primera vez")
-    #     return StreamingResponse(self.Estatura_user(id),
-    #                          media_type="multipart/x-mixed-replace; boundary=frame")
+    def video_feed(self, id: int):
+        print("entra primera vez")
+        return StreamingResponse(self.Estatura_user(id),
+                             media_type="multipart/x-mixed-replace; boundary=frame")
     
 
 
@@ -664,6 +667,12 @@ class UserController:
             conn.rollback()
         finally:
             conn.close()    
+
+ 
+    def detener_altura(self):
+        global detener_captura
+        detener_captura = True
+        return {"mensaje": "Captura detenida"}
     
     #StreamingResponse, es una clase de FastAPI que permite enviar datos como un flujo continuo, útil para video o audio.
     #Estatura_user devuelve frames JPEG uno a uno (cada imagen del video).
