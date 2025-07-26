@@ -131,4 +131,6 @@ async def Actualizar_estatura(user: Estatura_user):
 async def telegram_id_user(user: Buscar):
     rpta = nuevo_usuario.telegram_id_user(user)
     return rpta 
+
+
 #v_usuario   
