@@ -36,6 +36,7 @@ class UserController:
 
 
         except mysql.connector.Error as err:
+            print("Error en MySQL:", err)
             conn.rollback()
         finally:
             conn.close()
