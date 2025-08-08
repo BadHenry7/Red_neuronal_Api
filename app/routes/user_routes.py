@@ -37,6 +37,11 @@ async def get_user(user: Buscar):
     rpta = nuevo_usuario.get_user(user)
     return rpta
 
+@router.post("/get_medico_especialidad")
+async def get_medico_especialidad(user: Buscar):
+    rpta = nuevo_usuario.get_medico_especialidad(user)
+    return rpta
+
 @router.post("/get_user_document")
 async def get_user_document(user: Buscar_document):
     rpta = nuevo_usuario.get_user_document(user)

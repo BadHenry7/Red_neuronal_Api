@@ -116,6 +116,49 @@ class UserController:
         finally:
             conn.close()
 
+    def get_medico_especialidad(self, user: Buscar):
+        
+        try:
+            
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""SELECT usuario.*, atrixusuario.valor
+                FROM usuario
+               LEFT JOIN atrixusuario ON usuario.id = atrixusuario.id_usuario
+                        WHERE usuario.id=%s""", (user.id,))
+            result = cursor.fetchone()
+            payload = []
+            content = {} 
+            
+            content={
+                    'id':int(result[0]),
+                    'usuario':result[1],
+                    'password':result[2],
+                    'nombre':result[3],
+                    'apellido':result[4],
+                    'documento':result[5],
+                    'telefono':result[6],
+                    'id_rol':int(result[7]),
+                    'estado':bool(result[8]),
+                    'roles_name':result[17],
+                    'edad': result[9],
+                    'genero': result[10],
+                    'estatura': result[13],
+                    'especialidad': result[16]
+            }
+            payload.append(content)
+            
+            json_data = jsonable_encoder(content)            
+            if result:
+               return  json_data
+            else:
+                raise HTTPException(status_code=404, detail="User not found")  
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()
+
     def get_user_document(self, user: Buscar_document):
         
         try:
