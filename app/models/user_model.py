@@ -13,6 +13,7 @@ class User(BaseModel):
     estado:bool
     genero: str= None
     edad: int = None
+    completado: bool=None
     
 class Login(BaseModel):
     usuario: str
