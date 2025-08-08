@@ -140,7 +140,6 @@ class UserController:
                     'telefono':result[6],
                     'id_rol':int(result[7]),
                     'estado':bool(result[8]),
-                    'roles_name':result[17],
                     'edad': result[9],
                     'genero': result[10],
                     'estatura': result[13],
