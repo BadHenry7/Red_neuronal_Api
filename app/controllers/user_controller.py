@@ -220,7 +220,7 @@ class UserController:
                     'telefono':data[6],
                     'id_rol':data[7],
                     'estado':data[8],
-                    'nombre_rol':data[14],
+                    'nombre_rol':data[17],
                    
 
                 }
