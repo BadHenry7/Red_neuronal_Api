@@ -921,3 +921,46 @@ class citaController:
             conn.rollback()
         finally:
             conn.close()
+
+    def HistorialCitas(self, user: Buscar): 
+        
+        try:
+            print ("-----", user)
+            print ("-----", user.cedula)
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""SELECT  c.id, c.fecha, c.hora, c.estado, c.ubicacion, c.salas, a.valor AS atributo_medico
+                            FROM cita c
+                            JOIN atrixusuario a ON c.id_usuario = a.id_usuario 
+                            JOIN usuario u ON u.id=c.id_paciente
+                            WHERE u.id=%s;
+                 """, (user.cedula,))
+            result = cursor.fetchone()
+            payload = []
+            content = {} 
+            
+            if result:
+                content={
+                   
+                    'Fecha':result[0],
+                    'Hora':result[1],
+                    'estado': 'Finalizada' if result[3] == 0 else 'Pendiente',
+                    'ubicacion':result[4],
+                    'salas':result[5],
+                    'especialidad':result[6],
+
+                }
+    
+            payload.append(content)
+            
+            json_data = jsonable_encoder(content)            
+            if result:
+               return  json_data
+            else:
+                raise HTTPException(status_code=404, detail="User not found")  
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()
