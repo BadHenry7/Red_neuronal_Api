@@ -954,9 +954,9 @@ class citaController:
     
             payload.append(content)
             
-            json_data = jsonable_encoder(content)            
+            json_data = jsonable_encoder(payload)        
             if result:
-               return  json_data
+                return {"resultado": json_data}
             else:
                 raise HTTPException(status_code=404, detail="User not found")  
                 
