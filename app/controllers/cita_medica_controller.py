@@ -941,7 +941,7 @@ class citaController:
             content = {} 
             
             if result:
-                content={
+                 content={
                    
                     'Fecha':result[0],
                     'Hora':result[1],
@@ -949,8 +949,11 @@ class citaController:
                     'ubicacion':result[4],
                     'salas':result[5],
                     'especialidad':result[6],
+                    'paciente':result[7],
+                    'doctor':result[8],
 
                 }
+    
     
             payload.append(content)
             
