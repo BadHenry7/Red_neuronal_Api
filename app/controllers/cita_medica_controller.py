@@ -955,15 +955,10 @@ class citaController:
                 }
                 payload.append(content)
             
-    
-           
             
             json_data = jsonable_encoder(payload)        
-            if result:
-                return {"resultado": json_data}
-            else:
-                raise HTTPException(status_code=404, detail="User not found")  
-                
+           
+            return {"resultado": json_data}     
         except mysql.connector.Error as err:
             conn.rollback()
         finally:
