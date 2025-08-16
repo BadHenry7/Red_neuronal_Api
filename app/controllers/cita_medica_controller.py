@@ -940,22 +940,23 @@ class citaController:
             payload = []
             content = {} 
             
-            if result:
-                 content={
-                   
-                    'Fecha':result[1],
-                    'Hora':result[2],
-                    'estado': 'Finalizada' if result[3] == 0 else 'Pendiente',
-                    'ubicacion':result[4],
-                    'salas':result[5],
-                    'especialidad':result[6],
-                    'paciente':result[7],
-                    'doctor':result[8],
-
+            payload = []
+            content = {} 
+            for result in results:
+                content = {
+                'Fecha': result[1],
+                'Hora': result[2],
+                'estado': 'Finalizada' if result[3] == 0 else 'Pendiente',
+                'ubicacion': result[4],
+                'salas': result[5],
+                'especialidad': result[6],
+                'paciente': result[7],
+                'doctor': result[8],
                 }
+                payload.append(content)
+            
     
-    
-            payload.append(content)
+           
             
             json_data = jsonable_encoder(payload)        
             if result:
