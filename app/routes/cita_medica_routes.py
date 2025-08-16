@@ -150,7 +150,7 @@ async def get_ubicacion_chatbox(cita: Buscar_cedula):
 
 @router.post("/HistorialCitas")
 async def HistorialCitas(user: Buscar):
-    rpta = nueva_cita.HistorialCitas()
+    rpta = nueva_cita.HistorialCitas(user)
     return rpta 
 
    
