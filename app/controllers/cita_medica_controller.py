@@ -943,7 +943,7 @@ class citaController:
             for result in results:
                 content = {
                 'Fecha': result[1],
-                'Hora': result[2],
+                'Hora': str(result[2]),
                 'estado': 'Finalizada' if result[3] == 0 else 'Pendiente',
                 'ubicacion': result[4],
                 'salas': result[5],
