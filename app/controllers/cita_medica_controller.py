@@ -926,7 +926,7 @@ class citaController:
         
         try:
             print ("-----", user)
-            print ("-----", user.cedula)
+
 
             conn = get_db_connection()
             cursor = conn.cursor()
