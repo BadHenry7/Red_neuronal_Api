@@ -936,7 +936,7 @@ class citaController:
                             JOIN usuario u ON u.id=c.id_paciente
                             WHERE u.id=%s;
                  """, (user.id_paciente,))
-            result = cursor.fetchone()
+            results = cursor.fetchone()
             payload = []
             content = {} 
             
