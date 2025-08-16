@@ -926,7 +926,7 @@ class citaController:
         
         try:
             print ("-----", user)
-
+            
 
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -934,12 +934,10 @@ class citaController:
                             FROM cita c
                             JOIN atrixusuario a ON c.id_usuario = a.id_usuario 
                             JOIN usuario u ON u.id=c.id_paciente
-                            WHERE u.id=%s;
+                            JOIN usuario d ON d.id=c.id_usuario
+                            WHERE u.id=%s
                  """, (user.id_paciente,))
             results = cursor.fetchall()
-            payload = []
-            content = {} 
-            
             payload = []
             content = {} 
             for result in results:
@@ -956,9 +954,10 @@ class citaController:
                 payload.append(content)
             
             
-            json_data = jsonable_encoder(payload)        
+            json_data = jsonable_encoder(payload)     
+            print (payload)
            
-            return {"resultado": json_data}     
+            return {"resultado": json_data}       
         except mysql.connector.Error as err:
             conn.rollback()
         finally:
