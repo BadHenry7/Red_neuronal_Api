@@ -930,7 +930,7 @@ class citaController:
 
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("""SELECT  c.id, c.fecha, c.hora, c.estado, c.ubicacion, c.salas, a.valor AS atributo_medico
+            cursor.execute("""SELECT  c.id, c.fecha, c.hora, c.estado, c.ubicacion, c.salas, a.valor AS atributo_medico, u.nombre, d.nombre
                             FROM cita c
                             JOIN atrixusuario a ON c.id_usuario = a.id_usuario 
                             JOIN usuario u ON u.id=c.id_paciente
@@ -943,8 +943,8 @@ class citaController:
             if result:
                  content={
                    
-                    'Fecha':result[0],
-                    'Hora':result[1],
+                    'Fecha':result[1],
+                    'Hora':result[2],
                     'estado': 'Finalizada' if result[3] == 0 else 'Pendiente',
                     'ubicacion':result[4],
                     'salas':result[5],
