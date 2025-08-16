@@ -935,7 +935,7 @@ class citaController:
                             JOIN atrixusuario a ON c.id_usuario = a.id_usuario 
                             JOIN usuario u ON u.id=c.id_paciente
                             WHERE u.id=%s;
-                 """, (user.cedula,))
+                 """, (user.id_paciente,))
             result = cursor.fetchone()
             payload = []
             content = {} 
