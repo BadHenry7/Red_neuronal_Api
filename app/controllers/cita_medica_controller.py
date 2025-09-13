@@ -109,7 +109,7 @@ class citaController:
             cursor.execute("""
                            
                           SELECT cita.fecha,  cita.hora, usuario.nombre AS nombre_usuario,  paciente.nombre AS nombre_paciente, cita.id,
-                           cita.ubicacion, cita.salas
+                           cita.ubicacion, cita.salas, paciente.usuario
             FROM cita
             INNER JOIN usuario AS usuario ON cita.id_usuario = usuario.id
             INNER JOIN usuario AS paciente ON cita.id_paciente = paciente.id
@@ -127,7 +127,8 @@ class citaController:
                     'paciente':data[3],
                     'id':data[4],
                     'ubicacion':data[5],
-                    'salas':data[6]
+                    'salas':data[6], 
+                    'email': data[7]
 
 
                 
@@ -922,7 +923,9 @@ class citaController:
         finally:
             conn.close()
 
-    def HistorialCitas(self, user: Buscar): 
+
+ #------Mostrar HISTORIAL CITAS PACIENTE
+    def HistorialCitas(self, user: Buscar):
         
         try:
             print ("-----", user)
@@ -957,8 +960,12 @@ class citaController:
             json_data = jsonable_encoder(payload)     
             print (payload)
            
-            return {"resultado": json_data}       
+            return {"resultado": json_data}
+            
+                
         except mysql.connector.Error as err:
             conn.rollback()
         finally:
             conn.close()
+
+            
