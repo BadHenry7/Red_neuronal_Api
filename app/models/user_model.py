@@ -51,8 +51,13 @@ class ActualizarAdm(BaseModel):
     nombre: str
     apellido: str
     documento: str
-    password:str
     telefono:str
+    id_rol:int
+    estado: bool
+    genero: str= None
+    edad: int = None
+    password: str= None
+    estatura: str=None
 
 
 

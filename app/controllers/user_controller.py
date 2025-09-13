@@ -375,11 +375,11 @@ class UserController:
         finally:
             conn.close()    
 
-             
     def update_adm(self, adm: ActualizarAdm):
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
+            print ("eeeeeeeeeeeeeeee")
             cursor.execute("""
             UPDATE usuario
             SET usuario = %s,
@@ -387,17 +387,25 @@ class UserController:
             apellido = %s,
             documento=%s,
             password=%s,                           
-            telefono=%s
+            telefono=%s,
+            genero=%s,
+            edad=%s, 
+            estatura=%s
             WHERE id = %s
-            """,(adm.usuario,adm.nombre,adm.apellido,adm.documento,adm.password,adm.telefono,adm.id,))
+            """,(adm.usuario,adm.nombre,adm.apellido,adm.documento,adm.password,adm.telefono, adm.genero, adm.edad ,adm.estatura, adm.id,))
             conn.commit()
-           
-            return {"resultado": "Usuario actualizado correctamente"} 
+            print ("ssssssssssssss",cursor)
+            if cursor.rowcount == 0:
+                return {"error": "No se actualizó ningún usuario. Verifique si el ID es correcto o si los datos no han cambiado."}
+            else:
+                return {"resultado": "Usuario actualizado correctamente"} 
                 
         except mysql.connector.Error as err:
             conn.rollback()
+            return {"error": f"Error al actualizar usuario: {err}"}
         finally:
             conn.close()    
+
 
         
     def delete_user(self, user_id: int):
