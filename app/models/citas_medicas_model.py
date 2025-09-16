@@ -43,3 +43,6 @@ class Upditon(BaseModel):
        
 class Chaocita(BaseModel):
     id:int=None
+
+class ValidaHora(BaseModel):
+    hora: str

@@ -968,4 +968,31 @@ class citaController:
         finally:
             conn.close()
 
+ #------Validar horas ya elegidas por citas
+    def ValidarHora(self):
+        
+        try:  
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""SELECT hora, fecha FROM cita """)
+            results = cursor.fetchall()
+            payload = []
+            content = {} 
+            for result in results:
+                content = {
+                'Hora': str(result[0]),
+                'Fecha': str(result[1]),
+                }
+                payload.append(content)
             
+            
+            json_data = jsonable_encoder(payload)     
+            print (payload)
+           
+            return {"resultado": json_data}
+            
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()

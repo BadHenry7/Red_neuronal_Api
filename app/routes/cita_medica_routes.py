@@ -152,4 +152,9 @@ async def HistorialCitas(user: Buscar):
     rpta = nueva_cita.HistorialCitas(user)
     return rpta 
 
+@router.get("/ValidarHora")
+async def ValidarHora():
+    rpta = nueva_cita.ValidarHora()
+    return rpta 
+
    
