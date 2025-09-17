@@ -640,4 +640,24 @@ class UserController:
 ##user_controller = UserController()
 
 
+    def ValidarIncapacidad(self, user: ValidarIncapacidad):
+        try:
+    
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""SELECT usuario FROM usuario WHERE id=%s and documento=%s""",(user.id, user.cedula,))
+            rv= cursor.fetchone()
+            if rv:
+                return {"resultado": "Correcto"}
+            else:
+                 return {"resultado": "Incorrecto"}
+                
+        except mysql.connector.Error as err:
+            if conn:
+                conn.rollback()
+            return {"error": f"Un error inesperado ocurrió: {str(err)}"}
+        finally:
+            conn.close() 
+
+
 #AFK

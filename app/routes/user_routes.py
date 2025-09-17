@@ -137,5 +137,10 @@ async def telegram_id_user(user: Buscar):
     rpta = nuevo_usuario.telegram_id_user(user)
     return rpta 
 
+@router.post("/ValidarIncapacidad")
+async def ValidarIncapacidad(user: ValidarIncapacidad):
+    rpta = nuevo_usuario.ValidarIncapacidad(user)
+    return rpta 
+
 
 #v_usuario   

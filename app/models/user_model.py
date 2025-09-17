@@ -93,3 +93,8 @@ class Estatura (BaseModel):
 class Estatura_user (BaseModel):
     id: int
     estatura: str
+
+
+class ValidarIncapacidad(BaseModel):
+    id: int
+    cedula: str
