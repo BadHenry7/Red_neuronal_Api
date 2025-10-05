@@ -26,6 +26,7 @@ class Buscar(BaseModel):
 
 class Buscar_document(BaseModel):
     documento: str
+    id_doctor: int=None
 
 
 

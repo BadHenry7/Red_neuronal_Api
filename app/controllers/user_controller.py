@@ -11,7 +11,49 @@ import base64
 
 from fastapi.responses import HTMLResponse, StreamingResponse
 
+from pwdlib import PasswordHash
+password_hash = PasswordHash.recommended()
+
 class UserController:
+    def login(self, user: Login):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT id, usuario, nombre, password, apellido, id_rol FROM usuario     WHERE usuario=%s",(user.usuario,))
+            result = cursor.fetchone()
+                    
+            if not result:
+               raise HTTPException(status_code=404, detail="User not found")
+            hashed_password = result["password"]
+            print("hashed_password", hashed_password)
+            print("user.password", user.password)
+            print(repr(hashed_password))
+            if not password_hash.verify(user.password,hashed_password,):
+                raise HTTPException(status_code=400, detail="Incorrect password")
+            
+            
+            payload = []
+            content = {} 
+           
+            content = {
+    'id': result['id'],
+    'usuario': result['usuario'],
+    'nombre': result['nombre'],
+    'apellido': result['apellido'],
+    'rol': result['id_rol']
+}
+            payload.append(content)
+            content = {}
+            json_data = jsonable_encoder(payload)
+            return {"resultado": json_data}        
+
+        except mysql.connector.Error as err:
+            conn.rollback()
+            print(f"Error en la base de datos: {err}")
+            raise HTTPException(status_code=500, detail=f"Error en la base de datos: {str(err)}")
+        
+        finally:
+            conn.close() 
     
     def create_user(self, user: User):   
         try:
@@ -27,8 +69,9 @@ class UserController:
                 content={"Informacion":"Ya_existe"}
               
                 return jsonable_encoder(content)
-            else:   
-                cursor.execute("INSERT INTO usuario (usuario,password,nombre,apellido,documento,telefono,id_rol,estado, genero, edad, completado) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (user.usuario,user.password,user.nombre,user.apellido,user.documento,user.telefono,user.id_rol,user.estado, user.genero, user.edad,1))
+            else:
+                hashed_password = password_hash.hash(user.password)
+                cursor.execute("INSERT INTO usuario (usuario,password,nombre,apellido,documento,telefono,id_rol,estado, genero, edad, completado) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (user.usuario,hashed_password,user.nombre,user.apellido,user.documento,user.telefono,user.id_rol,user.estado, user.genero, user.edad,1))
                 conn.commit()
                 conn.close()
                 id=cursor.lastrowid
@@ -164,12 +207,17 @@ class UserController:
             
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM usuario WHERE documento = %s ", (user.documento,))
+            cursor.execute("""SELECT u.*
+                FROM usuario u
+                JOIN cita c ON u.id = c.id_paciente
+                WHERE u.documento = %s
+                AND c.id_usuario = %s
+                            """, (user.documento,user.id_doctor,))
             result = cursor.fetchone()
             payload = []
             content = {} 
-            
-            content={
+            if result:
+                content={
                     'id':int(result[0]),
                     'usuario':result[1],
                     'password':result[2],
@@ -421,36 +469,36 @@ class UserController:
         finally:
             conn.close()
 
-    def login(self, user: Login):
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM usuario where estado!=0 AND usuario = %s AND password = %s",(user.usuario, user.password,))
-            result = cursor.fetchall()
-            payload = []
-            content = {} 
-            for data in result:
-                content={
-                    'usuario':data[1],
-                    'password':data[2],
-                    'nombre':data[3],
-                    'apellido': data [4],
-                    'id':data[0],
-                    'rol':data[7],
+    # def login(self, user: Login):
+    #     try:
+    #         conn = get_db_connection()
+    #         cursor = conn.cursor()
+    #         cursor.execute("SELECT * FROM usuario where estado!=0 AND usuario = %s AND password = %s",(user.usuario, user.password,))
+    #         result = cursor.fetchall()
+    #         payload = []
+    #         content = {} 
+    #         for data in result:
+    #             content={
+    #                 'usuario':data[1],
+    #                 'password':data[2],
+    #                 'nombre':data[3],
+    #                 'apellido': data [4],
+    #                 'id':data[0],
+    #                 'rol':data[7],
 
 
-                }
-                payload.append(content)
-                content = {}
-            json_data = jsonable_encoder(payload)        
-            if result:
-               return {"resultado": json_data}
-            else:
-                raise HTTPException(status_code=404, detail="User not found")  
-        except mysql.connector.Error as err:
-            conn.rollback()
-        finally:
-            conn.close()
+    #             }
+    #             payload.append(content)
+    #             content = {}
+    #         json_data = jsonable_encoder(payload)        
+    #         if result:
+    #            return {"resultado": json_data}
+    #         else:
+    #             raise HTTPException(status_code=404, detail="User not found")  
+    #     except mysql.connector.Error as err:
+    #         conn.rollback()
+    #     finally:
+    #         conn.close()
 
 
     def verif_user(self, user: Verif_user):   

@@ -15,6 +15,9 @@ class citaController:
             conn.close()
             return {"resultado": "Cita añadida correctamente"}
         except mysql.connector.Error as err:
+            print("Error:", err)
+            raise HTTPException(status_code=500, detail="Error creating cita")  
+            
             conn.rollback()
         finally:
             conn.close()
@@ -146,6 +149,53 @@ class citaController:
             conn.rollback()
         finally:
             conn.close()
+
+
+     
+    def get_cita_doctor(self, user: Buscar):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                           
+                          SELECT cita.fecha,  cita.hora, usuario.nombre AS nombre_usuario,  paciente.nombre AS nombre_paciente, cita.id,
+                           cita.ubicacion, cita.salas, paciente.usuario
+            FROM cita
+            INNER JOIN usuario AS usuario ON cita.id_usuario = usuario.id
+            INNER JOIN usuario AS paciente ON cita.id_paciente = paciente.id
+            WHERE cita.estado=1 AND cita.id_usuario=%s            
+                           
+                           """, (user.id_paciente,))
+            result = cursor.fetchall()
+            payload = []
+            content = {} 
+            for data in result:
+                content={
+                    'fecha':data[0],
+                    'hora':str(data[1]),
+                    'medico':data[2],
+                    'paciente':data[3],
+                    'id':data[4],
+                    'ubicacion':data[5],
+                    'salas':data[6], 
+                    'email': data[7]
+
+
+                
+                }
+                payload.append(content)
+                content = {}
+            json_data = jsonable_encoder(payload)        
+            if result:
+                return {"resultado": json_data}
+               
+            else:
+                raise HTTPException(status_code=404, detail="citas not found")  
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()       
 
     def post_citas_users(self, cita: Buscar):
         try:
@@ -662,6 +712,88 @@ class citaController:
         finally:
             conn.close()
     
+
+
+    def historia_clinica_id(self, historia_clinica: Buscar):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""     
+            SELECT
+            cita.id, diagnosticos.fecha_diagnostico as fecha_diagnostico, 
+            diagnosticos.resultado as diagnosticos, diagnosticos.descripcion, diagnosticos.observacion as "Observacion/tratamiento", sintomas.nombre as sintomas ,sintomas.descripcion as "descripcion_sintomas"
+            FROM cita
+            JOIN
+            diagnosticos ON cita.id = diagnosticos.id_cita
+            JOIN 
+            usuario ON usuario.id=cita.id_paciente
+            JOIN 
+            sintomas ON cita.id= sintomas.id_cita
+            WHERE cita.id=%s
+                           """,(historia_clinica.id_cita,))
+            result = cursor.fetchall()
+            payload = []
+            content = {} 
+            for data in result:
+                content={
+                    'id':data[0],
+                    'fecha_diagnostico':str(data[1]),
+                    'diagnostico':data[2],
+                    'descripcion':data[3],
+                    'Observaciontratamiento':data[4],
+                    'sintomas':data[5],
+                    'descripcion_sintomas':data[6],         
+                }
+                payload.append(content)
+                content = {}
+            json_data = jsonable_encoder(payload)        
+            if result:
+               return {"resultado": json_data}
+               
+            else:
+                raise HTTPException(status_code=404, detail="citas not found")  
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+        finally:
+            conn.close()
+
+
+    def update_historialClinico(self, cita: DiagnosticoSintomas):
+        try:
+            print ("-----", cita)
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+            UPDATE diagnosticos
+            SET
+            resultado = %s,
+            descripcion = %s,
+            Observacion = %s
+            WHERE id_cita = %s
+            """,(cita.resultado,cita.descripcion, cita.Observacion,cita.id_cita))
+            
+            
+            cursor.execute("""
+            UPDATE sintomas
+            SET nombre = %s,
+            descripcion = %s
+            WHERE id_cita = %s
+            """,(cita.nombre,
+                 cita.descripcion, 
+                 cita.id_cita,))
+            
+            
+            conn.commit()
+            return {"resultado": "Historial_actualizada"} 
+                
+        except mysql.connector.Error as err:
+            print ("error-----", err)
+            raise HTTPException(status_code=500, detail="Error updating historial clinico") 
+            conn.rollback()
+        finally:
+            conn.close()  
+
 
     def historia_clinica_user(self, historia_clinica: Buscar):
         try:

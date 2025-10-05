@@ -44,7 +44,12 @@ async def get_citas():
 async def get_cita_admin():
     rpta = nueva_cita.get_cita_admin()
     return rpta
-    
+
+@router.post("/get_cita_doctor")
+async def get_cita_doctor(user: Buscar):
+    rpta = nueva_cita.get_cita_doctor(user)
+    return rpta
+        
 
 @router.put("/update_cita")
 async def update_cita(cita: Upditon,):
@@ -113,6 +118,15 @@ async def historia_clinica(historia_clinica: Buscar):
     rpta = nueva_cita.historia_clinica(historia_clinica)
     return rpta
 
+@router.post("/historia_clinica_id")
+async def historia_clinica_id(historia_clinica: Buscar):
+    rpta = nueva_cita.historia_clinica_id(historia_clinica)
+    return rpta
+
+@router.put("/update_historialClinico")
+async def update_historialClinico(user: DiagnosticoSintomas):
+    rpta = nueva_cita.update_historialClinico(user)
+    return rpta 
 
 
 @router.post("/historia_clinica_user")

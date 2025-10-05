@@ -11,7 +11,8 @@ class Citasm(BaseModel):
     ubicacion: str=None
 
 class Buscar(BaseModel):
-    id_paciente:int
+    id_paciente:int=None
+    id_cita:int=None
 
 class Buscar_cedula(BaseModel):
     cedula:str
@@ -46,3 +47,15 @@ class Chaocita(BaseModel):
 
 class ValidaHora(BaseModel):
     hora: str
+
+class DiagnosticoSintomas(BaseModel):
+    id_diagnostico: int = None
+    id_cita: int
+    resultado: str
+    descripcion: str
+    Observacion: str = None
+    fecha_diagnostico: str = None
+    id_sintomas: int = None
+    id_cita: int
+    nombre: str
+    descripcion: str

@@ -121,3 +121,7 @@ aws_region = os.getenv('AWS_REGION')
 
 mediapipe:
 py -m pip install mediapipe opencv-python
+
+
+Para encriptar contraseña:
+pip install "pwdlib[argon2]"
