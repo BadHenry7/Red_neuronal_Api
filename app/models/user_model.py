@@ -99,3 +99,7 @@ class Estatura_user (BaseModel):
 class ValidarIncapacidad(BaseModel):
     id: int
     cedula: str
+
+class Olvidar_password(BaseModel):
+    usuario: str
+    nuevo_password: str=None    

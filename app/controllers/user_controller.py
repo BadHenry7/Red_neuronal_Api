@@ -397,33 +397,47 @@ class UserController:
             print("user", user)
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT genero, edad,id_rol, password FROM usuario WHERE id = %s", (user.id,))
+            cursor.execute("SELECT genero, edad,id_rol FROM usuario WHERE id = %s", (user.id,))
             actual = cursor.fetchone()
             genero = user.genero if user.genero is not None else actual[0]
             edad = user.edad if user.edad is not None else actual[1]
-            password = user.password if user.password is not None else actual[2]
+            #password = user.password if user.password is not None else actual[2]
             rol=user.id_rol if user.id_rol is not None else actual[3]
             
-            cursor.execute("""
-            UPDATE usuario
-            SET usuario = %s,
-            nombre=%s,
-            apellido = %s,
-            documento=%s,
-            telefono=%s ,
-            id_rol=%s,
-            estado =%s,
-            genero=%s,
-            edad=%s, 
-            password=%s
-            WHERE id = %s
-            """,(user.usuario,user.nombre,user.apellido,user.documento,user.telefono,rol,user.estado,genero, edad,password,user.id,))
-            conn.commit()
+            cursor.execute("SELECT * FROM usuario WHERE documento= %s", (user.documento,))
+            result = cursor.fetchall()
+
+            if result:
+               
+                content = {}    
+                content={"resultado":"Ya_existe"}
+              
+                return jsonable_encoder(content)
+            else:
+                hashed_password = password_hash.hash(user.password)
+                cursor.execute("""
+                UPDATE usuario
+                SET usuario = %s,
+                nombre=%s,
+                apellido = %s,
+                documento=%s,
+                telefono=%s ,
+                id_rol=%s,
+                estado =%s,
+                genero=%s,
+                edad=%s, 
+                password=%s,
+                completado=1
+                WHERE id = %s
+                """,(user.usuario,user.nombre,user.apellido,user.documento,user.telefono,rol,user.estado,genero, edad,hashed_password,user.id,))
+                conn.commit()
            
-            return {"resultado": "Usuario actualizado correctamente"} 
+                return {"resultado": "Usuario actualizado correctamente"} 
                 
         except mysql.connector.Error as err:
             conn.rollback()
+            print ("error", err)
+            raise HTTPException(status_code=500, detail="User not found")  
         finally:
             conn.close()    
 
@@ -437,14 +451,13 @@ class UserController:
             SET usuario = %s,
             nombre=%s,
             apellido = %s,
-            documento=%s,
-            password=%s,                           
+            documento=%s,                          
             telefono=%s,
             genero=%s,
             edad=%s, 
             estatura=%s
             WHERE id = %s
-            """,(adm.usuario,adm.nombre,adm.apellido,adm.documento,adm.password,adm.telefono, adm.genero, adm.edad ,adm.estatura, adm.id,))
+            """,(adm.usuario,adm.nombre,adm.apellido,adm.documento,adm.telefono, adm.genero, adm.edad ,adm.estatura, adm.id,))
             conn.commit()
             print ("ssssssssssssss",cursor)
             if cursor.rowcount == 0:
@@ -525,7 +538,9 @@ class UserController:
                 
                 if result_google:
                     content = {}    
-                    content={"Informacion":"Ya_existe", 'id':int(result[0]),'rol_v':int(result[7]), 'estado':bool(result[15]), }
+                    print ("rol_v", result[7])
+                    content={"Informacion":"Ya_existe", 'id':int(result[0]),'rol_v':int(result[7]), 'estado':bool(result[15]),
+                             'token': str(result_google[4])}
                     return jsonable_encoder(content)
 
                 else:
@@ -533,9 +548,15 @@ class UserController:
                     cursor.execute("INSERT INTO sesiongoogle (id_usuario, google_id, access_token, foto, estado) VALUES (%s, %s, %s, %s,%s)",
                                (id, user.google_id, user.access_token,user.foto,user.estado,))
                     conn.commit()
+                    id=cursor.lastrowid
+                    cursor.execute("SELECT access_token FROM sesiongoogle where id = %s",(id,))
+                    result2= cursor.fetchone()
+                    print ("el access es", result2[0])
+
                    
                     content = {}    
-                    content={"Informacion":"Ya_existe", 'id':int(result[0]),'rol_v':int(result[7]), 'estado':bool(result[15]), }
+                    content={"Informacion":"Ya_existe", 'id':int(result[0]),'rol_v':int(result[7]), 'estado':bool(result[15]),
+                             'token': str(result2[0])} 
 
                     return jsonable_encoder(content)
 
@@ -549,11 +570,16 @@ class UserController:
                 cursor.execute("INSERT INTO sesiongoogle (id_usuario, google_id, access_token, foto, estado) VALUES (%s, %s, %s, %s,%s)",
                                (id, user.google_id, user.access_token,user.foto,user.estado,))
                 conn.commit()
-    
-                content = {}    
-                content={"Informacion":"Registrada", 'id': id}
-                return jsonable_encoder(content)
+                id=cursor.lastrowid
+                cursor.execute("SELECT access_token FROM sesiongoogle where id = %s",(id,))
+                result2= cursor.fetchone()
+                print ("el access es", result2[0])
 
+
+
+                content = {}    
+                content={"Informacion":"Registrada", 'id': id, 'token': str(result2[0])}
+                return jsonable_encoder(content)
 
         except mysql.connector.Error as err:
             conn.rollback()
@@ -710,6 +736,54 @@ class UserController:
             return {"error": f"Un error inesperado ocurrió: {str(err)}"}
         finally:
             conn.close() 
+
+    def olvidePassword(self, user: Olvidar_password):
+        
+        try:
+            
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""SELECT usuario FROM usuario
+                           WHERE usuario=%s AND estado=1
+                           """
+                           , (user.usuario,))
+            result = cursor.fetchone()       
+            if result:
+               return  {"resultado": "usuario existe"}
+            else:
+                raise HTTPException(status_code=404, detail="User not found")  
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+            print(f"Error en la base de datos: {err}")
+            raise HTTPException(status_code=500, detail=f"Error en la base de datos: {str(err)}")       
+        finally:
+            conn.close()
+
+    def update_password(self, user: Olvidar_password):
+        try:
+            print("user", user)
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            hashed_password = password_hash.hash(user.nuevo_password)
+            cursor.execute("""
+            UPDATE usuario
+            SET password =  %s
+            WHERE usuario = %s
+            """,(hashed_password, user.usuario,))
+            conn.commit()
+           
+            return {"resultado": "Password_actualizado"} 
+                
+        except mysql.connector.Error as err:
+            conn.rollback()
+            print(f"Error en la base de datos: {err}")
+            raise HTTPException(status_code=500, detail=f"Error en la base de datos")
+                                
+        finally:
+            conn.close()    
+        
+                
 
 
 #AFK

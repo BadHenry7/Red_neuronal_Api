@@ -11,11 +11,18 @@ class diagnosticoController:
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute("INSERT INTO diagnosticos (id_cita,resultado,descripcion,Observacion,estado) VALUES (%s,%s,%s,%s,%s)", (diagnosticos.id_cita, diagnosticos.resultado,diagnosticos.descripcion,diagnosticos.Observacion,diagnosticos.estado,))
+            cursor.execute("""
+                UPDATE cita 
+                SET estado = 0
+                WHERE id = %s    
+                """, (diagnosticos.id_cita,))
             conn.commit()
             conn.close()
             return {"resultado": "diagnosticos añadida correctamente"}
         except mysql.connector.Error as err:
             conn.rollback()
+            print ("error", err)
+            raise HTTPException(status_code=500, detail="Error")  
         finally:
             conn.close()
         

@@ -142,5 +142,15 @@ async def ValidarIncapacidad(user: ValidarIncapacidad):
     rpta = nuevo_usuario.ValidarIncapacidad(user)
     return rpta 
 
+@router.post("/olvidePassword")
+async def olvidePassword(user: Olvidar_password):
+    rpta = nuevo_usuario.olvidePassword(user)
+    return rpta 
+
+@router.put("/update_password")
+async def update_password(user: Olvidar_password):
+    rpta = nuevo_usuario.update_password(user)
+    return rpta 
+
 
 #v_usuario   
